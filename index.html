@@ -164,7 +164,7 @@
             </div>
             
             <div class="relative flex-1">
-                <textarea id="input-code" spellcheck="false" class="absolute inset-0 w-full h-full p-4 font-mono text-size-md wrap-on resize-none" oninput="processConversion()" placeholder="Escribe o pega tu JSON molde aquí..."></textarea>
+                <textarea id="input-code" spellcheck="false" class="absolute inset-0 w-full h-full p-4 font-mono text-size-md wrap-on resize-none" oninput="processConversion()" placeholder="Escribe o pega tu código aquí..."></textarea>
             </div>
             
             <div class="border-t border-dark-border px-4 py-2 bg-dark-bg flex justify-between items-center text-xs">
@@ -361,6 +361,18 @@
             copyBtnContainer.style.display = 'flex';
             outFooter.style.display = 'flex';
 
+            // Actualizar placeholder dinámico según la herramienta
+            const inputField = document.getElementById('input-code');
+            if (tool === 'json') inputField.placeholder = "Pega o escribe tu JSON aquí para formatear o validar...";
+            else if (tool === 'crypto') inputField.placeholder = "Escribe el texto que deseas cifrar, codificar o decodificar...";
+            else if (tool === 'url') inputField.placeholder = "Escribe la URL o parámetros a codificar/decodificar...";
+            else if (tool === 'html') inputField.placeholder = "Escribe tu código HTML o CSS para minificar...";
+            else if (tool === 'lang') inputField.placeholder = "Pega tu código fuente para analizar sintaxis...";
+            else if (tool === 'sql') inputField.placeholder = "Escribe tu consulta SQL desordenada aquí...";
+            else if (tool === 'qa') inputField.placeholder = "Pega tu JSON molde de ejemplo aquí para generar el mock...";
+            else if (tool === 'dev') inputField.placeholder = "Área de utilidades. Haz clic arriba para generar UUID o Timestamp...";
+            else if (tool === 'preview') inputField.placeholder = "Escribe tu estructura HTML / CSS / JS para renderizar en vivo...";
+
             if(tool !== 'lang' && tool !== 'preview') {
                 document.getElementById(`tool-${tool}`).classList.remove('hidden');
                 document.getElementById(`tool-${tool}`).classList.add('flex');
@@ -445,7 +457,7 @@
             updateStats(input, outputField.value);
         }
 
-        // MOTOR INTELIGENTE DE QA MOCK (Lee el JSON izquierdo y randomiza sus claves)
+        // QA Mock JSON Generator
         function generateSmartMock() {
             const inputVal = document.getElementById('input-code').value.trim();
             if (!inputVal) {
@@ -457,7 +469,6 @@
                 const template = JSON.parse(inputVal);
                 const count = parseInt(document.getElementById('qa-count').value);
 
-                // Función recursiva para randomizar valores según el nombre de la clave
                 function randomizeValue(key, sampleVal) {
                     const k = key.toLowerCase();
                     const randChoice = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -480,7 +491,6 @@
                         return newObj;
                     }
 
-                    // Strings inteligentes basados en la clave o contexto (Vehículos / Socios / Datos generales)
                     if (k.includes('patente') || k.includes('dominio') || k.includes('plate')) {
                         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                         const l1 = letters[Math.floor(Math.random()*26)] + letters[Math.floor(Math.random()*26)];
@@ -501,7 +511,6 @@
                     return sampleVal + '_' + Math.floor(Math.random() * 90 + 10);
                 }
 
-                // Determinar si la estructura tiene una lista o es un objeto único
                 let generatedResult;
                 if (Array.isArray(template)) {
                     generatedResult = [];
@@ -525,7 +534,6 @@
                     }
                     generatedResult = { ...template, total: count, data: list };
                 } else {
-                    // Objeto plano genérico
                     generatedResult = {};
                     for (let key in template) {
                         generatedResult[key] = randomizeValue(key, template[key]);
